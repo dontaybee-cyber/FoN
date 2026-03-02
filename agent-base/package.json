@@ -1,0 +1,35 @@
+{
+  "name": "agent-base",
+  "version": "0.1.0",
+  "type": "module",
+  "description": "Standard base scaffolding for agent projects. See AGENT_STANDARDS.md.",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "scripts": {
+    "start":         "node --env-file=.env dist/main.js",
+    "build":         "tsc",
+    "tsgo":          "tsc --noEmit",
+    "check":         "pnpm format && pnpm lint",
+    "format":        "prettier --check \"src/**/*.ts\"",
+    "format:fix":    "prettier --write \"src/**/*.ts\"",
+    "lint":          "eslint \"src/**/*.ts\"",
+    "test":          "vitest run",
+    "test:watch":    "vitest",
+    "test:coverage": "vitest run --coverage",
+    "dev":           "node --env-file=.env --import tsx/esm src/main.ts"
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "typescript":    "^5.4.0",
+    "vitest":        "^1.6.0",
+    "@vitest/coverage-v8": "^1.6.0",
+    "tsx":           "^4.7.0",
+    "prettier":      "^3.2.0",
+    "eslint":        "^9.0.0",
+    "@typescript-eslint/eslint-plugin": "^7.0.0",
+    "@typescript-eslint/parser":        "^7.0.0"
+  },
+  "engines": {
+    "node": ">=22"
+  }
+}
