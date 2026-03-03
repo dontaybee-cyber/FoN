@@ -1,18 +1,20 @@
 # Stage 1: Build
 FROM node:22-slim AS builder
 
+# Add build tools for better-sqlite3
+RUN apt-get update && apt-get install -h && apt-get install -y python3 make g++ && rm -rf /var/lib/apt/lists/*
+
 RUN npm install -g pnpm
 
 WORKDIR /app
 
 COPY pnpm-lock.yaml package.json ./
 
-# Install dependencies
-RUN pnpm install
+# Install EVERYTHING and approve the better-sqlite3 build
+RUN pnpm install && pnpm approve-builds
 
 COPY . .
 
-# Run the build
 RUN pnpm run build
 
 # Stage 2: Runtime
