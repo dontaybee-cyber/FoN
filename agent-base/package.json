@@ -18,7 +18,11 @@
     "test:coverage": "vitest run --coverage",
     "dev":           "node --env-file=.env --import tsx/esm src/main.ts"
   },
-  "dependencies": {},
+  "dependencies": {
+    "express": "^4.19.2",
+    "better-sqlite3": "^11.0.0",
+    "dotenv": "^16.4.5"
+  },
   "devDependencies": {
     "typescript":    "^5.4.0",
     "vitest":        "^1.6.0",

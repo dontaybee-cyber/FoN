@@ -1,5 +1,5 @@
 # Stage 1: Build
-FROM node:22-slim AS builder  <-- Updated to 22
+FROM node:22-slim AS builder
 
 RUN npm install -g pnpm
 
@@ -7,31 +7,28 @@ WORKDIR /app
 
 COPY pnpm-lock.yaml package.json ./
 
-# Approve builds so esbuild can compile the TS code
-RUN pnpm install --frozen-lockfile && pnpm approve-builds 
+# Install dependencies
+RUN pnpm install
 
 COPY . .
 
+# Run the build
 RUN pnpm run build
 
 # Stage 2: Runtime
-FROM node:20-slim AS runner
+FROM node:22-slim AS runner
 
 WORKDIR /app
 RUN npm install -g pnpm
 
-# Copy only the necessary files from builder
 COPY --from=builder /app/dist ./dist
 COPY --from=builder /app/package.json ./package.json
 COPY --from=builder /app/pnpm-lock.yaml ./pnpm-lock.yaml
 
 # Install only production dependencies
-RUN pnpm install --prod --frozen-lockfile
+RUN pnpm install --prod
 
-# Expose the Dashboard port
 EXPOSE 3000
-
-# Set environment to production
 ENV NODE_ENV=production
 
 # Start the agent
