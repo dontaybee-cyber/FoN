@@ -1,19 +1,17 @@
 # Stage 1: Build
-FROM node:20-slim AS builder
+FROM node:22-slim AS builder  <-- Updated to 22
 
-# Install pnpm for budget-friendly fast builds
 RUN npm install -g pnpm
 
 WORKDIR /app
 
-# Copy lockfile and package.json first to leverage Docker caching
 COPY pnpm-lock.yaml package.json ./
-RUN pnpm install --frozen-lockfile
 
-# Copy the rest of the source
+# Approve builds so esbuild can compile the TS code
+RUN pnpm install --frozen-lockfile && pnpm approve-builds 
+
 COPY . .
 
-# Build the TypeScript code
 RUN pnpm run build
 
 # Stage 2: Runtime
