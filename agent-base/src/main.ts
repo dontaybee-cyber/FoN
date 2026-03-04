@@ -61,6 +61,11 @@ const dashboard = new DashboardServer({
   commandHandler: (cmd) => director.handleManualCommand(cmd),
 });
 
+dashboard.addMessage(
+  "FoN",
+  "System initialized. I am standing by for lead enrichment tasks.",
+);
+
 deps.log = createDashboardLogger(deps.log, dashboard);
 dashboard.addLog("Command Center boot sequence initiated.");
 dashboard.start();
