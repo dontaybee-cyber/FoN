@@ -27,3 +27,7 @@ COPY --from=builder /app/pnpm-lock.yaml ./pnpm-lock.yaml
 RUN pnpm install --prod
 EXPOSE 3000
 CMD ["node", "dist/main.js"]
+# ... (rest of Dockerfile stays the same)
+
+# Limit Node to ~400MB so the OS has room, preventing the 512MB hard crash
+CMD ["node", "--max-old-space-size=400", "dist/main.js"]
