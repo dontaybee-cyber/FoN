@@ -55,3 +55,13 @@ process.on("uncaughtException", (err) => {
   director.stopHeartbeat();
   process.exit(1);
 });
+// Self-pinging Heartbeat to prevent Render Sleep
+const RENDER_URL = process.env.RENDER_EXTERNAL_URL; // Render automatically provides this
+
+if (RENDER_URL) {
+  setInterval(() => {
+    fetch(RENDER_URL)
+      .then(() => console.log('💓 Heartbeat: Staying awake and alert.'))
+      .catch((err) => console.error('💔 Heartbeat failed:', err.message));
+  }, 14 * 60 * 1000); // 14 minutes
+}

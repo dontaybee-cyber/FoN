@@ -69,3 +69,28 @@ export class DashboardServer {
     });
   }
 }
+app.get('/', (req, res) => {
+  const greetings = [
+    "I'm awake and scanning the horizon for leads.",
+    "System systems are green. Ready for your instructions.",
+    "Data is flowing. I've got everything under control.",
+    "Just crunching some numbers. What's on your mind?"
+  ];
+  const randomGreeting = greetings[Math.floor(Math.random() * greetings.length)];
+
+  res.send(`
+    <html>
+      <body style="background: #0f172a; color: #38bdf8; font-family: 'Courier New', monospace; display: flex; align-items: center; justify-content: center; height: 100vh; margin: 0;">
+        <div style="text-align: center; border: 1px solid #1e293b; padding: 2rem; border-radius: 8px; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);">
+          <h1 style="color: #f8fafc;">🌪️ Force of Nature (FoN)</h1>
+          <p style="font-size: 1.2rem; margin-bottom: 2rem;">"${randomGreeting}"</p>
+          <div style="display: inline-block; text-align: left; background: #1e293b; padding: 1rem; border-radius: 4px;">
+            <code>STATUS: <span style="color: #4ade80;">OPERATIONAL</span></code><br>
+            <code>UPTIME: ${Math.floor(process.uptime() / 60)} minutes</code><br>
+            <code>ENGINE: Node 22 (Optimized)</code>
+          </div>
+        </div>
+      </body>
+    </html>
+  `);
+});
