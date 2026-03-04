@@ -14,6 +14,7 @@ RUN pnpm install
 
 COPY . .
 RUN pnpm run build
+# ... (rest of Dockerfile)
 
 # Stage 2: Runtime
 FROM node:22-slim AS runner
@@ -25,9 +26,9 @@ COPY --from=builder /app/package.json ./package.json
 COPY --from=builder /app/pnpm-lock.yaml ./pnpm-lock.yaml
 
 RUN pnpm install --prod
-EXPOSE 3000
-CMD ["node", "dist/main.js"]
-# ... (rest of Dockerfile stays the same)
 
-# Limit Node to ~400MB so the OS has room, preventing the 512MB hard crash
+EXPOSE 3000
+ENV NODE_ENV=production
+
+# Set memory limit to 400MB to avoid OOM crashes on Render
 CMD ["node", "--max-old-space-size=400", "dist/main.js"]

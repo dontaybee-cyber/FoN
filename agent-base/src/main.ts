@@ -17,6 +17,13 @@ console.log(theme.accent("Force of Nature booting..."));
 
 const deps = createProductionDeps();
 const modelInvoker = createModelInvoker(deps);
+// Instead of scanning 50 sites at once, do them in chunks of 3
+const BATCH_SIZE = 3;
+for (let i = 0; i < leads.length; i += BATCH_SIZE) {
+  const batch = leads.slice(i, i + BATCH_SIZE);
+  await Promise.all(batch.map(lead => enricher.enrich(lead)));
+  console.log(`Processed batch ${i / BATCH_SIZE + 1}. Taking a breath...`);
+}
 
 const director = createAgencyDirector(
   {
@@ -63,5 +70,13 @@ if (RENDER_URL) {
     fetch(RENDER_URL)
       .then(() => console.log('💓 Heartbeat: Staying awake and alert.'))
       .catch((err) => console.error('💔 Heartbeat failed:', err.message));
+  }, 14 * 60 * 1000); // 14 minutes
+}
+const RENDER_URL = process.env.RENDER_EXTERNAL_URL;
+if (RENDER_URL) {
+  setInterval(() => {
+    fetch(RENDER_URL)
+      .then(() => console.log('💓 Heartbeat: Staying awake and alert.'))
+      .catch((err: any) => console.error('💔 Heartbeat failed:', err.message));
   }, 14 * 60 * 1000); // 14 minutes
 }
