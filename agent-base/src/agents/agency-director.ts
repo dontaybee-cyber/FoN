@@ -1,4 +1,4 @@
-﻿import { BaseAgent, type ModelOutput } from "./agent.js";
+﻿import { BaseAgent, type ModelOutput, newSessionId } from "./agent.js";
 import { theme } from "../terminal/theme.js";
 import type { ModelInvoker } from "../infra/model-adapter.js";
 import type { AgentConfig, AgentSession, SessionId, AgentDeps } from "./types.js";
@@ -65,6 +65,35 @@ export class AgencyDirector extends BaseAgent {
     if (this.heartbeatInterval) {
       clearInterval(this.heartbeatInterval);
       this.heartbeatInterval = null;
+    }
+  }
+
+  public async handleManualCommand(cmd: string): Promise<string> {
+    const trimmed = cmd.trim();
+    if (!trimmed) {
+      const message = "Manual command was empty.";
+      this.deps.log.warn(`[AgencyDirector] ${message}`);
+      return message;
+    }
+
+    this.deps.log.info(`[AgencyDirector] Manual command received: ${trimmed}`);
+
+    if (trimmed.toLowerCase() === "health") {
+      const result = await this.checkAgencyHealth();
+      const summary = `Health check complete. Decisions: ${result.decisions.length}`;
+      this.deps.log.info(`[AgencyDirector] ${summary}`);
+      return summary;
+    }
+
+    try {
+      const sessionId = `manual-${newSessionId()}`;
+      const result = await this.prompt(sessionId, trimmed);
+      this.deps.log.info("[AgencyDirector] Manual command complete.");
+      return result.output;
+    } catch (err) {
+      const message = err instanceof Error ? err.message : "Unknown error";
+      this.deps.log.error(`[AgencyDirector] Manual command failed: ${message}`);
+      return "Manual command failed. Check server logs.";
     }
   }
 
@@ -310,3 +339,5 @@ function isValidDecisionArray(data: unknown): data is AgencyDecision[] {
     )
   );
 }
+
+
