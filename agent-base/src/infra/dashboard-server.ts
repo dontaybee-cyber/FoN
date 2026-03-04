@@ -289,13 +289,13 @@ export class DashboardServer {
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>FoN Command Center</title>
     <style>
-      @import url("https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;600&display=swap");
+      @import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap");
 
       :root {
-        --bg: #0f172a;
-        --panel: #1e293b;
-        --panel-border: #334155;
-        --cyan: #38bdf8;
+        --bg-color: #020617;
+        --glass-bg: rgba(30, 41, 59, 0.7);
+        --accent-cyan: #22d3ee;
+        --border-color: rgba(255, 255, 255, 0.1);
         --text: #f8fafc;
         --muted: #94a3b8;
         --green: #22c55e;
@@ -306,36 +306,40 @@ export class DashboardServer {
       }
 
       body {
-        margin: 0;
-        min-height: 100vh;
-        display: flex;
-        background: radial-gradient(circle at top, #101b36 0%, #0b1326 45%, #050812 100%);
+        background: radial-gradient(circle at top right, #1e293b, #020617);
         color: var(--text);
-        font-family: "Space Grotesk", "IBM Plex Sans", sans-serif;
+        font-family: "Inter", system-ui, sans-serif;
+        margin: 0;
+        display: flex;
+        height: 100vh;
+        overflow: hidden;
       }
 
       .sidebar {
-        width: 300px;
-        background: linear-gradient(180deg, #17243d 0%, #0f172a 100%);
-        border-right: 1px solid var(--panel-border);
-        padding: 24px;
+        width: 280px;
+        background: var(--glass-bg);
+        backdrop-filter: blur(12px);
+        border-right: 1px solid var(--border-color);
+        padding: 30px 20px;
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
       }
 
       .sidebar h3 {
-        margin: 0 0 16px;
-        color: var(--cyan);
-        letter-spacing: 1px;
+        margin: 0;
+        color: var(--accent-cyan);
+        letter-spacing: 1.5px;
         text-transform: uppercase;
-        font-size: 14px;
+        font-size: 13px;
       }
 
       .metric-tile {
-        background: #101c34;
-        border: 1px solid var(--panel-border);
-        padding: 14px;
-        margin-bottom: 12px;
-        border-radius: 12px;
-        box-shadow: 0 10px 30px rgba(5, 10, 24, 0.4);
+        background: rgba(15, 23, 42, 0.6);
+        border: 1px solid var(--border-color);
+        padding: 16px;
+        border-radius: 16px;
+        box-shadow: 0 20px 40px rgba(2, 6, 23, 0.4);
       }
 
       .metric-tile p {
@@ -350,7 +354,7 @@ export class DashboardServer {
       }
 
       .progress-bg {
-        background: #0f172a;
+        background: rgba(2, 6, 23, 0.6);
         height: 10px;
         width: 100%;
         border-radius: 8px;
@@ -358,7 +362,7 @@ export class DashboardServer {
       }
 
       .progress-fill {
-        background: linear-gradient(90deg, #06b6d4 0%, #38bdf8 100%);
+        background: linear-gradient(90deg, rgba(34, 211, 238, 0.4), rgba(34, 211, 238, 0.95));
         height: 100%;
         width: 0%;
         border-radius: 8px;
@@ -366,20 +370,25 @@ export class DashboardServer {
       }
 
       .chat-container {
-        flex: 1;
+        flex-grow: 1;
         display: flex;
         flex-direction: column;
-        background: linear-gradient(180deg, rgba(15, 23, 42, 0.95), rgba(8, 12, 24, 0.98));
+        margin: 20px;
+        background: var(--glass-bg);
+        backdrop-filter: blur(16px);
+        border: 1px solid var(--border-color);
+        border-radius: 24px;
+        box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+        overflow: hidden;
       }
 
       .chat-header {
-        padding: 20px 24px;
-        border-bottom: 1px solid var(--panel-border);
+        padding: 22px 28px;
+        border-bottom: 1px solid var(--border-color);
         display: flex;
         align-items: center;
         gap: 12px;
-        background: rgba(15, 23, 42, 0.9);
-        backdrop-filter: blur(6px);
+        background: rgba(2, 6, 23, 0.35);
       }
 
       .status-dot {
@@ -387,78 +396,42 @@ export class DashboardServer {
         height: 10px;
         background: var(--green);
         border-radius: 50%;
-        box-shadow: 0 0 10px var(--green);
-        animation: pulse 1.6s infinite;
+        box-shadow: 0 0 12px rgba(34, 197, 94, 0.6);
+        animation: pulse 2s infinite;
       }
 
       .messages-area {
         flex-grow: 1;
         overflow-y: auto;
-        padding: 24px;
+        padding: 28px;
         display: flex;
         flex-direction: column;
         gap: 16px;
-        animation: fadeIn 0.5s ease;
-      }
-
-      .input-area {
-        padding: 16px 20px;
-        background: #1e293b;
-        border-top: 1px solid #334155;
-        display: flex;
-        gap: 10px;
-      }
-
-      .input-area input {
-        flex-grow: 1;
-        background: #0f172a;
-        border: 1px solid #334155;
-        padding: 12px;
-        border-radius: 8px;
-        color: var(--text);
-        outline: none;
-        font-family: inherit;
-      }
-
-      .input-area input:focus {
-        border-color: #38bdf8;
-      }
-
-      .input-area button {
-        background: #38bdf8;
-        color: #0f172a;
-        border: none;
-        padding: 0 24px;
-        border-radius: 8px;
-        font-weight: 600;
-        cursor: pointer;
-      }
-
-      .input-area button:hover {
-        background: #06b6d4;
       }
 
       .message {
-        max-width: 70%;
-        padding: 12px 16px;
-        border-radius: 12px;
+        max-width: 80%;
+        padding: 14px 18px;
+        border-radius: 18px;
         font-size: 0.95rem;
         line-height: 1.4;
-        box-shadow: 0 8px 20px rgba(6, 182, 212, 0.08);
+        backdrop-filter: blur(4px);
       }
 
       .message.fon {
         align-self: flex-start;
-        background: #1e293b;
-        border: 1px solid #334155;
-        color: var(--cyan);
+        background: rgba(34, 211, 238, 0.1);
+        border: 1px solid rgba(34, 211, 238, 0.2);
+        color: var(--accent-cyan);
+        border-bottom-left-radius: 4px;
       }
 
       .message.owner {
         align-self: flex-end;
-        background: rgba(56, 189, 248, 0.12);
-        border: 1px solid rgba(56, 189, 248, 0.4);
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid var(--border-color);
         color: var(--text);
+        border-bottom-right-radius: 4px;
       }
 
       .message.system {
@@ -477,44 +450,75 @@ export class DashboardServer {
         display: block;
       }
 
+      .input-area {
+        padding: 24px;
+        background: rgba(15, 23, 42, 0.5);
+        display: flex;
+        gap: 12px;
+        border-top: 1px solid var(--border-color);
+      }
+
+      .input-area input {
+        flex-grow: 1;
+        background: rgba(255, 255, 255, 0.03);
+        border: 1px solid var(--border-color);
+        padding: 14px 20px;
+        border-radius: 14px;
+        color: white;
+        transition: all 0.3s ease;
+        outline: none;
+        font-family: inherit;
+      }
+
+      .input-area input:focus {
+        border-color: var(--accent-cyan);
+        box-shadow: 0 0 15px rgba(34, 211, 238, 0.3);
+      }
+
+      .input-area button {
+        background: var(--accent-cyan);
+        color: #0f172a;
+        border: none;
+        padding: 0 24px;
+        border-radius: 14px;
+        font-weight: 700;
+        cursor: pointer;
+        transition: all 0.2s ease;
+      }
+
+      .input-area button:hover {
+        background: #06b6d4;
+      }
+
       ::-webkit-scrollbar {
         width: 6px;
       }
 
       ::-webkit-scrollbar-thumb {
-        background: #334155;
+        background: rgba(148, 163, 184, 0.4);
         border-radius: 10px;
       }
 
       @keyframes pulse {
-        0% {
-          transform: scale(0.85);
-          opacity: 0.6;
-        }
-        50% {
-          transform: scale(1.2);
-          opacity: 1;
-        }
-        100% {
-          transform: scale(0.85);
-          opacity: 0.6;
-        }
-      }
-
-      @keyframes fadeIn {
-        from { opacity: 0; transform: translateY(8px); }
-        to { opacity: 1; transform: translateY(0); }
+        0% { opacity: 1; transform: scale(1); }
+        50% { opacity: 0.5; transform: scale(1.2); }
+        100% { opacity: 1; transform: scale(1); }
       }
 
       @media (max-width: 900px) {
         body {
           flex-direction: column;
+          height: auto;
         }
 
         .sidebar {
           width: 100%;
           border-right: none;
-          border-bottom: 1px solid var(--panel-border);
+          border-bottom: 1px solid var(--border-color);
+        }
+
+        .chat-container {
+          margin: 16px;
         }
       }
     </style>
@@ -534,7 +538,9 @@ export class DashboardServer {
     <div class="chat-container">
       <div class="chat-header">
         <div class="status-dot"></div>
-        <h2 style="margin: 0;">Force of Nature</h2>
+        <h2 style="margin: 0; letter-spacing: 2px;">
+          DBAI <span style="color:var(--accent-cyan)">FORCE OF NATURE</span>
+        </h2>
       </div>
 
       <div class="messages-area" id="chat-box"></div>
