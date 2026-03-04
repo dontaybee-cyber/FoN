@@ -106,6 +106,38 @@ export class DashboardServer {
       });
     });
 
+    this.app.post("/api/command", async (req: Request, res: Response) => {
+      const body = req.body as Record<string, unknown> | undefined;
+      const raw = body?.["text"];
+      const text = typeof raw === "string" ? raw.trim() : "";
+
+      if (!text) {
+        res.status(400).json({ error: "No text provided" });
+        return;
+      }
+
+      this.addMessage("Owner", text);
+
+      try {
+        let responseText = "Command executed successfully.";
+        if (this.commandHandler) {
+          const result = await this.commandHandler(text);
+          if (typeof result === "string" && result.trim().length > 0) {
+            responseText = result.trim();
+          }
+        } else {
+          responseText = "No command handler configured.";
+        }
+
+        this.addMessage("FoN", responseText);
+        res.json({ success: true });
+      } catch (err) {
+        const message = err instanceof Error ? err.message : "Unknown error";
+        this.addMessage("System", `Error: ${message}`);
+        res.status(500).json({ error: message });
+      }
+    });
+
     this.app.post("/command", async (req: Request, res: Response) => {
       try {
         const body = req.body as Record<string, unknown> | undefined;
@@ -222,6 +254,26 @@ export class DashboardServer {
         .catch(() => {
           // Silent refresh failure.
         });
+    }
+
+    const commandForm = document.getElementById("command-form");
+    const commandInput = document.getElementById("command-input");
+
+    if (commandForm && commandInput) {
+      commandForm.addEventListener("submit", (event) => {
+        event.preventDefault();
+        const text = String(commandInput.value || "").trim();
+        if (!text) return;
+
+        commandInput.value = "";
+        fetch("/api/command", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ text: text }),
+        }).then(() => {
+          updateChat();
+        });
+      });
     }
 
     updateChat();
@@ -349,6 +401,43 @@ export class DashboardServer {
         animation: fadeIn 0.5s ease;
       }
 
+      .input-area {
+        padding: 16px 20px;
+        background: #1e293b;
+        border-top: 1px solid #334155;
+        display: flex;
+        gap: 10px;
+      }
+
+      .input-area input {
+        flex-grow: 1;
+        background: #0f172a;
+        border: 1px solid #334155;
+        padding: 12px;
+        border-radius: 8px;
+        color: var(--text);
+        outline: none;
+        font-family: inherit;
+      }
+
+      .input-area input:focus {
+        border-color: #38bdf8;
+      }
+
+      .input-area button {
+        background: #38bdf8;
+        color: #0f172a;
+        border: none;
+        padding: 0 24px;
+        border-radius: 8px;
+        font-weight: 600;
+        cursor: pointer;
+      }
+
+      .input-area button:hover {
+        background: #06b6d4;
+      }
+
       .message {
         max-width: 70%;
         padding: 12px 16px;
@@ -449,6 +538,15 @@ export class DashboardServer {
       </div>
 
       <div class="messages-area" id="chat-box"></div>
+      <form class="input-area" id="command-form">
+        <input
+          type="text"
+          id="command-input"
+          placeholder="Type a command (e.g., /status or /pause)..."
+          autocomplete="off"
+        />
+        <button type="submit">Send</button>
+      </form>
     </div>
 
     <script>${clientScript}</script>
